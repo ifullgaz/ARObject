@@ -21,7 +21,7 @@ open class ARObjectViewController: UIViewController, ARSessionDelegate, ARObject
     }
     
     // MARK: - Instances Variables
-    lazy var updateQueue: DispatchQueue = {
+    lazy public var updateQueue: DispatchQueue = {
         DispatchQueue(label: "com.arobject.\(String(describing: self)).serialSceneKitQueue")
     }()
 
@@ -89,6 +89,7 @@ open class ARObjectViewController: UIViewController, ARSessionDelegate, ARObject
     open func resetSession() {
         let configuration = sessionConfiguration()
         sceneView.debugOptions = debugOptions()
+        sceneView.session.delegateQueue = self.updateQueue
         sceneView.session.run(configuration, options: sessionRunOptions())
     }
 
