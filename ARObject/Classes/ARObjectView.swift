@@ -161,10 +161,26 @@ open class ARObjectView: ARSCNView {
             if let coachingOverlayViewDelegate = delegate as? ARCoachingOverlayViewDelegate {
                 coachingOverlayView?.delegate = coachingOverlayViewDelegate
             }
+            if let sessionDelegate = delegate as? ARSessionDelegate {
+                self.session.delegate = sessionDelegate
+            }
         }
     }
     
     // MARK: - Initialization
+    convenience public init(in view: UIView) {
+        self.init(frame: view.frame)
+        view.addSubview(self)
+        self.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            self.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            self.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            self.widthAnchor.constraint(equalTo: view.widthAnchor),
+            self.heightAnchor.constraint(equalTo: view.heightAnchor)
+        ])
+        view.sendSubviewToBack(self)
+    }
+    
     override public init(frame: CGRect, options: [String : Any]? = nil) {
         super.init(frame: frame, options: options)
         createDependentObjects()

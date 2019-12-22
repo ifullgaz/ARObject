@@ -105,20 +105,10 @@ open class ARObjectViewController: UIViewController, ARSessionDelegate, ARObject
         super.viewDidLoad()
 
         if sceneView == nil {
-            sceneView = ARObjectView(frame: CGRect())
-            view.addSubview(sceneView)
-            sceneView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                sceneView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                sceneView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-                sceneView.widthAnchor.constraint(equalTo: view.widthAnchor),
-                sceneView.heightAnchor.constraint(equalTo: view.heightAnchor)
-            ])
+            sceneView = ARObjectView(in: self.view)
             sceneView.delegate = self
-            view.sendSubviewToBack(sceneView)
         }
         sceneView.focusNode?.updateQueue = updateQueue
-        sceneView.useFocusNode = true
     }
     
     override open func viewWillAppear(_ animated: Bool) {
