@@ -10,16 +10,10 @@ import UIKit
 extension StatusViewIndicator {
     func setup() {
         self.backgroundColor = UIColor.clear
-        label = UILabel(frame: CGRect(x: 20, y: 3, width: 100, height: 14))
-        label!.text = "Status"
-        label!.font = UIFont.systemFont(ofSize: 12, weight: .light)
-        self.addSubview(label!)
     }
 }
 
 class StatusViewIndicator: UIView {
-    var label: UILabel?
-    
     func bexierPath() -> UIBezierPath {
         let path = UIBezierPath()
         path.addArc(withCenter: CGPoint(x: 10, y: 10), radius: 8, startAngle: 0, endAngle: 2 * .pi, clockwise: true)
@@ -35,8 +29,6 @@ class StatusViewIndicator: UIView {
         fillColor.setFill()
         path.stroke()
         path.fill()
-        let textColor = isOn ? UIColor.darkGray : UIColor.lightGray
-        label!.textColor = textColor
     }
 
     public var isOn: Bool = false

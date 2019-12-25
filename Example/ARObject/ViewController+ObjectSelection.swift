@@ -1,0 +1,77 @@
+/*
+See LICENSE folder for this sample’s licensing information.
+
+Abstract:
+Methods on the main view controller for handling virtual object loading and movement
+*/
+
+import UIKit
+import ARKit
+import ARObject
+
+extension ViewController: ARObjectSelectionViewControllerDelegate {
+    
+    // MARK: - ARObjectSelectionViewControllerDelegate
+    func arObjectSelectionViewController(_ selectionViewController: ARObjectSelectionViewController, updateAvailabilityFor object: ARObject) -> Bool {
+        return sceneView.objectInteractor?.canPlace(arObject: object, at: sceneView.center) ?? false
+    }
+    
+    // - Tag: PlaceVirtualContent
+    func arObjectSelectionViewController(_: ARObjectSelectionViewController, didSelectObject object: ARObject) {
+        arObjectLoader.load(object: object, onCompletion: { [unowned self] loadedObject in
+            do {
+                let scene = try SCNScene(url: object.referenceURL!, options: nil)
+                self.sceneView.prepare([scene], completionHandler: { _ in
+                    DispatchQueue.main.async {
+                        self.hideObjectLoadingUI()
+                        guard !self.sceneView.useFocusNode || self.sceneView.focusNode!.detectionState != .initializing,
+                            self.sceneView.objectInteractor!.place(arObject: object) else {
+                             self.statusViewController.showMessage("CANNOT PLACE OBJECT\nTry moving left or right.")
+                             if let controller = self.objectsViewController {
+                                 self.arObjectSelectionViewController(controller, didDeselectObject: object)
+                             }
+                             return
+                         }
+                        
+                    }
+                })
+            } catch {
+                fatalError("Failed to load SCNScene from object.referenceURL")
+            }
+            
+        })
+        displayObjectLoadingUI()
+    }
+    
+    func arObjectSelectionViewController(_: ARObjectSelectionViewController, didDeselectObject object: ARObject) {
+        guard let objectIndex = arObjectLoader.loadedObjects.firstIndex(of: object) else {
+            fatalError("Programmer error: Failed to lookup virtual object in scene.")
+        }
+        arObjectLoader.removeARObject(at: objectIndex)
+        if let anchor = object.anchor {
+            self.session.remove(anchor: anchor)
+        }
+    }
+
+    // MARK: Object Loading UI
+    func displayObjectLoadingUI() {
+        // Show progress indicator.
+        spinner.startAnimating()
+        
+        addObjectButton.setImage(#imageLiteral(resourceName: "buttonring"), for: [])
+
+        addObjectButton.isEnabled = false
+        isRestartAvailable = false
+    }
+
+    func hideObjectLoadingUI() {
+        // Hide progress indicator.
+        spinner.stopAnimating()
+
+        addObjectButton.setImage(#imageLiteral(resourceName: "add"), for: [])
+        addObjectButton.setImage(#imageLiteral(resourceName: "addPressed"), for: [.highlighted])
+
+        addObjectButton.isEnabled = true
+        isRestartAvailable = true
+    }
+}

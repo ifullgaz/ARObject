@@ -7,7 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		186D59EE23ABCBFC003E7AF2 /* IBViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186D59ED23ABCBFC003E7AF2 /* IBViewController.swift */; };
+		1871BEBD23B1B5F4004C7DFE /* Models.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 1871BEBC23B1B5F4004C7DFE /* Models.scnassets */; };
+		1871BEBF23B1B87D004C7DFE /* ARObjectLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1871BEBE23B1B87D004C7DFE /* ARObjectLoader.swift */; };
+		1871BEC123B1B928004C7DFE /* StatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1871BEC023B1B928004C7DFE /* StatusViewController.swift */; };
+		1871BEC323B1C35E004C7DFE /* ARObjectSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1871BEC223B1C35E004C7DFE /* ARObjectSelectionViewController.swift */; };
+		1871BEC923B22D62004C7DFE /* ViewController+ObjectSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1871BEC523B22D61004C7DFE /* ViewController+ObjectSelection.swift */; };
+		1871BECA23B22D62004C7DFE /* ViewController+Popover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1871BEC623B22D61004C7DFE /* ViewController+Popover.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
@@ -17,7 +22,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		186D59ED23ABCBFC003E7AF2 /* IBViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IBViewController.swift; sourceTree = "<group>"; };
+		1871BEBC23B1B5F4004C7DFE /* Models.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Models.scnassets; sourceTree = "<group>"; };
+		1871BEBE23B1B87D004C7DFE /* ARObjectLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARObjectLoader.swift; sourceTree = "<group>"; };
+		1871BEC023B1B928004C7DFE /* StatusViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusViewController.swift; sourceTree = "<group>"; };
+		1871BEC223B1C35E004C7DFE /* ARObjectSelectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARObjectSelectionViewController.swift; sourceTree = "<group>"; };
+		1871BEC523B22D61004C7DFE /* ViewController+ObjectSelection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+ObjectSelection.swift"; sourceTree = "<group>"; };
+		1871BEC623B22D61004C7DFE /* ViewController+Popover.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+Popover.swift"; sourceTree = "<group>"; };
 		37E2DF586BD618B125284FFB /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* ARObject_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ARObject_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -69,9 +79,14 @@
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
-				186D59ED23ABCBFC003E7AF2 /* IBViewController.swift */,
+				1871BEC623B22D61004C7DFE /* ViewController+Popover.swift */,
+				1871BEC523B22D61004C7DFE /* ViewController+ObjectSelection.swift */,
+				1871BEC023B1B928004C7DFE /* StatusViewController.swift */,
+				1871BEBE23B1B87D004C7DFE /* ARObjectLoader.swift */,
+				1871BEC223B1C35E004C7DFE /* ARObjectSelectionViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
+				1871BEBC23B1B5F4004C7DFE /* Models.scnassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 			);
@@ -148,7 +163,6 @@
 				TargetAttributes = {
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
-						DevelopmentTeam = Y8Z6DSEEW8;
 						LastSwiftMigration = 1130;
 					};
 				};
@@ -177,6 +191,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
+				1871BEBD23B1B5F4004C7DFE /* Models.scnassets in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 			);
@@ -236,9 +251,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				186D59EE23ABCBFC003E7AF2 /* IBViewController.swift in Sources */,
+				1871BEC323B1C35E004C7DFE /* ARObjectSelectionViewController.swift in Sources */,
+				1871BEBF23B1B87D004C7DFE /* ARObjectLoader.swift in Sources */,
+				1871BECA23B22D62004C7DFE /* ViewController+Popover.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				1871BEC923B22D62004C7DFE /* ViewController+ObjectSelection.swift in Sources */,
+				1871BEC123B1B928004C7DFE /* StatusViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -374,7 +393,7 @@
 			baseConfigurationReference = 87EC080AA99496AA96C03D1A /* Pods-ARObject_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = Y8Z6DSEEW8;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = ARObject/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
@@ -390,7 +409,7 @@
 			baseConfigurationReference = 951139485F481EDAB2D8B9D1 /* Pods-ARObject_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = Y8Z6DSEEW8;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = ARObject/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
