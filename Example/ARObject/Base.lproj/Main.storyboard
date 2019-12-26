@@ -111,6 +111,11 @@
                         <subviews>
                             <sceneKitView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" wantsMultisampling="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q4u-iA-Cc5" customClass="ARObjectView" customModule="ARObject">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="useFocusNode" value="NO"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="useCoachingOverlayView" value="NO"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="useObjectInteractor" value="NO"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="delegate" destination="KLx-yI-Lsn" id="awb-TL-Wal"/>
                                 </connections>

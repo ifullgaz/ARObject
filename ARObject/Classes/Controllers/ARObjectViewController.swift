@@ -162,8 +162,8 @@ open class ARObjectViewController: UIViewController, ARSessionDelegate, ARSCNVie
         if sceneView == nil {
             sceneView = ARObjectView(in: self.view)
             sceneView.delegate = self
-            sceneView.updateQueue = updateQueue
         }
+        sceneView.updateQueue = updateQueue
     }
     
     override open func viewWillAppear(_ animated: Bool) {
