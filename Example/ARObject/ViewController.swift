@@ -71,6 +71,23 @@ class ViewController: ARObjectViewController {
         block(nil)
     }
 
+    // MARK: AROBjectView Delegate
+    override func objectView(_ view: ARObjectView, made focusNode: FocusNode) {
+    }
+
+    override func objectView(_ view: ARObjectView, made coachingOverlayView: ARCoachingOverlayView) {
+        coachingOverlayView.activatesAutomatically = true
+        coachingOverlayView.goal = .tracking
+    }
+
+    override func objectView(_ view: ARObjectView, made statusView: ARStatusView) {
+        statusView.setRestartBock(block: { (sender) in
+            self.restartExperience()
+        })
+    }
+
+    override func objectView(_ view: ARObjectView, made objectInteractor: ARObjectInteractor) {}
+
     // MARK: - ARSCNViewDelegate
     override func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         super.renderer(renderer, updateAtTime: time)
@@ -93,7 +110,7 @@ class ViewController: ARObjectViewController {
         guard anchor is ARPlaneAnchor else { return }
         DispatchQueue.main.async {
             self.sceneView.statusView?.cancelScheduledMessage(type: "plane")
-            self.sceneView.statusView?.show(message: "Surface detected")
+            self.sceneView.statusView?.present(message: "Surface detected")
             if self.arObjectLoader.loadedObjects.isEmpty {
                 self.sceneView.statusView?.schedule(message: "TAP + TO PLACE AN OBJECT", in: 7.5, type: "content")
             }
@@ -102,7 +119,7 @@ class ViewController: ARObjectViewController {
     
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
         DispatchQueue.main.async {
-            self.sceneView.statusView?.show(message: camera.trackingState.description)
+            self.sceneView.statusView?.present(message: camera.trackingState.description)
             switch camera.trackingState {
             case .notAvailable, .limited:
                 self.sceneView.statusView?.schedule(message: camera.trackingState.description, in: 3.0, type: "tracking")
@@ -144,9 +161,9 @@ class ViewController: ARObjectViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let objectInteractor = ARObjectInteractor(sceneView: sceneView)
-        objectInteractor.updateQueue = updateQueue
-        objectInteractor.delegate = self
+//        let objectInteractor = ARObjectInteractor(sceneView: sceneView)
+//        objectInteractor.updateQueue = updateQueue
+//        objectInteractor.delegate = self
         
         sceneView.focusNodeType = FocusArc.self
     }

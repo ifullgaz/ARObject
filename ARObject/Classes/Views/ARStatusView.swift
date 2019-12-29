@@ -23,30 +23,37 @@ public extension ARCamera.TrackingState {
     }
 }
 
+public typealias ARStatusDisplayerRestartBlock = (_ sender: Any?) -> Void
+
 @objc
 public protocol ARStatusDisplayer where Self: UIView {
-    func show(message: String)
+    
+    func updateWorldMappingStatus(_ status: ARFrame.WorldMappingStatus)
+    
+    func setRestartBock(block: ARStatusDisplayerRestartBlock?)
+    
+    func present(message: String)
 
-    func hide()
+    func dismiss()
 
     func schedule(message: String, in delay: TimeInterval, type: String)
 
     func cancelScheduledMessage(type: String)
 
     func cancelAllScheduledMessages()
-
-    func updateWorldMappingStatus(status: ARFrame.WorldMappingStatus)
 }
 
 @IBDesignable
-open class ARStatusView: UIControl, ARStatusDisplayer {
+open class ARStatusView: UIView, ARStatusDisplayer {
     
+    // MARK: - Public constants
     public static var perpectiveCoefficient: CGFloat = 1 / 500
 
     public static var animationDuration: TimeInterval = 0.25
 
     public static var displayDuration: TimeInterval = 5.0
 
+    // MARK: - Private instance variables
     private var worldMappingStatusView: UIView = UIView()
     
     private var statusLabel: UIView = UIView()
@@ -71,6 +78,9 @@ open class ARStatusView: UIControl, ARStatusDisplayer {
 
     private var isAnimating: Bool = false
 
+    private var restartBlock: ARStatusDisplayerRestartBlock? = nil
+    
+    // MARK: - Public instance variables
     private(set) var isFlipped: Bool = false {
         didSet {
             self.flip()
@@ -128,7 +138,29 @@ open class ARStatusView: UIControl, ARStatusDisplayer {
             labelBottom.sizeToFit()
         }
     }
+    
+    public var worldMappingStatus: ARFrame.WorldMappingStatus = .notAvailable {
+        didSet {
+            guard worldMappingStatus != oldValue else { return }
+            DispatchQueue.main.async {
+                switch self.worldMappingStatus {
+                    case .notAvailable:
+                        self.worldMappingStatusView.backgroundColor = UIColor.red
+                    case .limited:
+                        self.worldMappingStatusView.backgroundColor = UIColor.yellow
+                    case .extending:
+                        self.worldMappingStatusView.backgroundColor = UIColor.orange
+                    case .mapped:
+                        self.worldMappingStatusView.backgroundColor = UIColor.green
+                    default:
+                        self.worldMappingStatusView.backgroundColor = UIColor.purple
+                }
+                self.present(message: "Mapping \(self.worldMappingStatus)")
+            }
+        }
+    }
 
+    // MARK: - Private methods
     private func setInitialTransforms() {
         layerTransformTop = CATransform3DIdentity
         layerTransformBottom = CATransform3DIdentity
@@ -159,11 +191,6 @@ open class ARStatusView: UIControl, ARStatusDisplayer {
         }
     }
     
-    @objc
-    private func restart(sender: Any?) {
-        self.sendActions(for: .touchUpInside)
-    }
-
     private func createSubViewHierarchy(containerView: UIView, isTop: Bool) -> UILabel {
         let view = UIView()
         view.backgroundColor = UIColor.clear
@@ -253,18 +280,10 @@ open class ARStatusView: UIControl, ARStatusDisplayer {
         let buttonImage = UIImage(named: "restart", in: bundle, compatibleWith: nil)
         restartButton.setImage(buttonImage, for: .normal)
         restartButton.setTitle("", for: .normal)
-#endif
         restartButton.adjustsImageWhenHighlighted = true
         restartButton.adjustsImageWhenDisabled = true
-        restartButton.addTarget(self, action: #selector(ARStatusView.restart(sender:)), for: Event.touchUpInside)
-        self.addSubview(restartButton)
-        
-        restartButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            restartButton.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8),
-            restartButton.centerYAnchor.constraint(equalTo: self.centerYAnchor)
-        ])
-        
+        restartButton.addTarget(self, action: #selector(ARStatusView.restart(sender:)), for: .touchUpInside)
+#endif
         self.labelTop = createSubViewHierarchy(containerView: statusLabel, isTop: true)
         self.labelBottom = createSubViewHierarchy(containerView: statusLabel, isTop: false)
         setInitialTransforms()
@@ -274,6 +293,14 @@ open class ARStatusView: UIControl, ARStatusDisplayer {
         statusLabel.layer.masksToBounds = true
         self.addSubview(statusLabel)
         
+        self.addSubview(restartButton)
+        
+        restartButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            restartButton.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8),
+            restartButton.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+        ])
+        
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             statusLabel.leftAnchor.constraint(equalTo: worldMappingStatusView.rightAnchor, constant: 8),
@@ -281,8 +308,6 @@ open class ARStatusView: UIControl, ARStatusDisplayer {
             statusLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor),
         ])
         flip()
-
-        self.updateWorldMappingStatus(status: .notAvailable)
     }
 
     private func flip(completion block: (() -> Void)? = nil) {
@@ -306,10 +331,23 @@ open class ARStatusView: UIControl, ARStatusDisplayer {
             }
     }
 
-    public func show(message: String) {
+    // MARK: - Restart button handler
+    @objc
+    private func restart(sender: Any?) {
+        if let restartBlock = restartBlock {
+            restartBlock(self)
+        }
+    }
+
+    // MARK: - Public interface
+    public func setRestartBock(block: ARStatusDisplayerRestartBlock?) {
+        restartBlock = block
+    }
+
+    public func present(message: String) {
         if !isFlipped {
             flip() {
-                self.show(message: message)
+                self.present(message: message)
             }
         }
         else {
@@ -328,7 +366,7 @@ open class ARStatusView: UIControl, ARStatusDisplayer {
         }
     }
 
-    public func hide() {
+    public func dismiss() {
         if !isFlipped {
             flip()
         }
@@ -341,7 +379,7 @@ open class ARStatusView: UIControl, ARStatusDisplayer {
             withTimeInterval: delay,
             repeats: false,
             block: { [weak self] timer in
-                self?.show(message: message)
+                self?.present(message: message)
                 timer.invalidate()
         })
 
@@ -358,24 +396,12 @@ open class ARStatusView: UIControl, ARStatusDisplayer {
             cancelScheduledMessage(type: type)
         }
     }
-    
-    public func updateWorldMappingStatus(status: ARFrame.WorldMappingStatus) {
-        DispatchQueue.main.async {
-            switch status {
-            case .notAvailable:
-                self.worldMappingStatusView.backgroundColor = UIColor.red
-            case .limited:
-                self.worldMappingStatusView.backgroundColor = UIColor.orange
-            case .extending:
-                self.worldMappingStatusView.backgroundColor = UIColor.yellow
-            case .mapped:
-                self.worldMappingStatusView.backgroundColor = UIColor.green
-            default:
-                self.worldMappingStatusView.backgroundColor = UIColor.purple
-            }
-        }
+
+    public func updateWorldMappingStatus(_ status: ARFrame.WorldMappingStatus) {
+        worldMappingStatus = status
     }
 
+    // MARK: - Initialisation
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.createViewHiearchy()

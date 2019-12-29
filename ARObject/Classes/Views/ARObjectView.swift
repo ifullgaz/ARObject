@@ -9,6 +9,16 @@
 import ARKit
 import ARFocusSquare
 
+public protocol ARObjectViewDelegate {
+    func objectView(_ view: ARObjectView, made focusNode: FocusNode)
+
+    func objectView(_ view: ARObjectView, made coachingOverlayView: ARCoachingOverlayView)
+
+    func objectView(_ view: ARObjectView, made statusView: ARStatusView)
+
+    func objectView(_ view: ARObjectView, made objectInteractor: ARObjectInteractor)
+}
+
 private extension ARObjectView {
     func removeFocusNode(focusNode: FocusNode?) {
         if let focusNode = focusNode {
@@ -29,6 +39,9 @@ private extension ARObjectView {
                 let focusNode = self.focusNodeType.init()
                 self.focusNode = focusNode
                 manageFocusNode = true
+                if let arObjectViewDelegate = delegate as? ARObjectViewDelegate {
+                    arObjectViewDelegate.objectView(self, made: focusNode)
+                }
             }
             if let focusNode = focusNode {
                 if manageFocusNode {
@@ -65,9 +78,10 @@ private extension ARObjectView {
             if coachingOverlayView == nil {
                 let coachingOverlayView = ARCoachingOverlayView()
                 self.coachingOverlayView = coachingOverlayView
-                coachingOverlayView.activatesAutomatically = true
-                coachingOverlayView.goal = .tracking
                 manageCoachingOverlayView = true
+                if let arObjectViewDelegate = delegate as? ARObjectViewDelegate {
+                    arObjectViewDelegate.objectView(self, made: coachingOverlayView)
+                }
             }
             if let coachingOverlayView = coachingOverlayView {
                 if manageCoachingOverlayView {
@@ -109,6 +123,9 @@ private extension ARObjectView {
                 let statusView = ARStatusView()
                 self.statusView = statusView
                 manageStatusView = true
+                if let arObjectViewDelegate = delegate as? ARObjectViewDelegate {
+                    arObjectViewDelegate.objectView(self, made: statusView)
+                }
             }
             if let statusView = statusView {
                 statusView.removeFromSuperview()
@@ -146,6 +163,9 @@ private extension ARObjectView {
                 let objectInteractor = ARObjectInteractor()
                 self.objectInteractor = objectInteractor
                 manageObjectInteractor = true
+                if let arObjectViewDelegate = delegate as? ARObjectViewDelegate {
+                    arObjectViewDelegate.objectView(self, made: objectInteractor)
+                }
             }
             if let objectInteractor = objectInteractor {
                 if manageObjectInteractor {

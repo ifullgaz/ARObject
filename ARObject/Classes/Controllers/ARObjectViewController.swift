@@ -10,7 +10,13 @@ import ARKit
 import ARFocusSquare
 import IFGExtensions
 
-open class ARObjectViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate, FocusNodeDelegate, ARCoachingOverlayViewDelegate, ARObjectInteractorDelegate {
+open class ARObjectViewController: UIViewController,
+                                   ARSessionDelegate,
+                                   ARSCNViewDelegate,
+                                   FocusNodeDelegate,
+                                   ARCoachingOverlayViewDelegate,
+                                   ARObjectInteractorDelegate,
+                                   ARObjectViewDelegate {
 
     // MARK: - UI Elements
     @IBOutlet public var sceneView: ARObjectView!
@@ -101,7 +107,19 @@ open class ARObjectViewController: UIViewController, ARSessionDelegate, ARSCNVie
     open func arObjectInteractor(_ interactor: ARObjectInteractor,
                             didRotateObject object: ARObject,
                             by angle: CGFloat) {}
-    
+
+    // MARK: - ARObjectView Delegate
+    open func objectView(_ view: ARObjectView, made focusNode: FocusNode) {}
+
+    open func objectView(_ view: ARObjectView, made coachingOverlayView: ARCoachingOverlayView) {
+        coachingOverlayView.activatesAutomatically = true
+        coachingOverlayView.goal = .tracking
+    }
+
+    open func objectView(_ view: ARObjectView, made statusView: ARStatusView) {}
+
+    open func objectView(_ view: ARObjectView, made objectInteractor: ARObjectInteractor) {}
+
     // MARK: - ARSCNViewDelegate
     open func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         DispatchQueue.main.async {
@@ -129,8 +147,7 @@ open class ARObjectViewController: UIViewController, ARSessionDelegate, ARSCNVie
     }
     
     open func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        self.sceneView.statusView?.updateWorldMappingStatus(status: frame.worldMappingStatus)
-    
+        self.sceneView.statusView?.updateWorldMappingStatus(frame.worldMappingStatus)
     }
     
     /*
@@ -157,7 +174,8 @@ open class ARObjectViewController: UIViewController, ARSessionDelegate, ARSCNVie
     }
     
     open func debugOptions() -> SCNDebugOptions {
-        return [.showFeaturePoints, .showWorldOrigin]
+//        return [.showFeaturePoints, .showWorldOrigin]
+        return []
     }
     
     // MARK: - Session Management

@@ -241,8 +241,8 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
             for gestureRecognizer in gestureRecognizers {
                 oldValue?.removeGestureRecognizer(gestureRecognizer)
             }
+            gestureRecognizers = []
             guard let sceneView = sceneView else {
-                gestureRecognizers = []
                 return
             }
             /// Create new Gesture recognizers for the view
@@ -530,11 +530,5 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
         arObject.raycast = trackedRaycast
         arObject.isHidden = false
         return true
-    }
-    
-    // MARK: - Initialization
-    convenience public init(sceneView view: ARObjectView) {
-        self.init()
-        sceneView = view
     }
 }
