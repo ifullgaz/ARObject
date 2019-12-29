@@ -101,9 +101,6 @@ open class ARObject: SCNNode {
     /// The object's corresponding ARAnchor.
     public var anchor: ARAnchor?
 
-    /// The raycast query used when placing this object.
-    public var raycastQuery: ARRaycastQuery?
-    
     /// The associated tracked raycast used to place this object.
     public var raycast: ARTrackedRaycast?
     

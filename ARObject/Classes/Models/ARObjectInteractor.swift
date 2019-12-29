@@ -102,12 +102,17 @@ private extension ARSCNView {
         return raycastQuery(from: point, allowing: .estimatedPlane, alignment: alignment)
     }
     
-    func detectEstimatedPlane(from point: CGPoint) -> (ARRaycastQuery, ARRaycastResult)? {
-        if let query = getRaycastQuery(from: point, for: .horizontal),
+    func detectEstimatedPlane(
+        from point: CGPoint,
+        for alignment: ARRaycastQuery.TargetAlignment = .any) -> (ARRaycastQuery, ARRaycastResult)? {
+
+        if alignment != .horizontal,
+           let query = getRaycastQuery(from: point, for: .vertical),
            let result = castRay(for: query).first {
             return (query, result)
         }
-        if let query = getRaycastQuery(from: point, for: .vertical),
+        if alignment != .vertical,
+           let query = getRaycastQuery(from: point, for: .horizontal),
            let result = castRay(for: query).first {
             return (query, result)
         }
@@ -498,12 +503,13 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
             selectedObject = nil
         } else if let delegate = delegate as? ARObjectInteractorDelegate,
                   let (_, plane) = sceneView.detectEstimatedPlane(from: touchLocation) {
-                    delegate.arObjectInteractor(self,
-                                               requestsObjectAt: touchLocation,
-                                               for: plane.targetAlignment) { (object) -> Void in
+                    delegate.arObjectInteractor(
+                        self,
+                        requestsObjectAt: touchLocation,
+                        for: plane.targetAlignment) { (object) -> Void in
                 guard let object = object else { return }
                 if self.canPlace(arObject: object, at: touchLocation) &&
-                   self.place(arObject: object) {
+                   self.place(arObject: object, at: touchLocation) {
                     delegate.arObjectInteractor(self, didInsertObject: object, at: touchLocation)
                 }
                 else {
@@ -523,17 +529,17 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
     public func canPlace(arObject: ARObject, at point: CGPoint) -> Bool {
         if let query = sceneView.getRaycastQuery(from: point, for: arObject.allowedAlignment),
            let _ = sceneView.castRay(for: query).first {
-            arObject.raycastQuery = query
             return true
         }
         return false
     }
     
-    public func place(arObject: ARObject) -> Bool {
-        guard let query = arObject.raycastQuery else { return false }
+    public func place(arObject: ARObject, at point: CGPoint) -> Bool {
+        guard let query = sceneView.getRaycastQuery(from: point, for: arObject.allowedAlignment) else { return false }
 
-        let trackedRaycast = createTrackedRaycast(of: arObject,
-                                                  from: query)
+        let trackedRaycast = createTrackedRaycast(
+            of: arObject,
+            from: query)
 
         arObject.raycast = trackedRaycast
         arObject.isHidden = false
