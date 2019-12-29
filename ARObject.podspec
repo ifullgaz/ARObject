@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ARObject'
-  s.version          = '0.7.0'
+  s.version          = '0.7.1'
   s.summary          = 'A library to help develop AR apps.'
 
 # This description is used to generate tags and improve search results.

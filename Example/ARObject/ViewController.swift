@@ -33,7 +33,7 @@ class ViewController: ARObjectViewController {
         // Ensure adding objects is an available action and we are not loading another object (to avoid concurrent modifications of the scene).
         guard !addObjectButton.isHidden && !arObjectLoader.isLoading else { return }
         
-        self.sceneView.statusView?.cancelScheduledMessage(for: "content")
+        self.sceneView.statusView?.cancelScheduledMessage(type: "content")
         performSegue(withIdentifier: SegueIdentifier.showObjects.rawValue, sender: addObjectButton)
     }
 
@@ -52,7 +52,7 @@ class ViewController: ARObjectViewController {
             if !sceneView.coachingOverlayView!.isActive {
                 addObjectButton.isHidden = false
             }
-            self.sceneView.statusView?.cancelScheduledMessage(for: "focus")
+            self.sceneView.statusView?.cancelScheduledMessage(type: "focus")
         }
     }
 
@@ -92,7 +92,7 @@ class ViewController: ARObjectViewController {
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         guard anchor is ARPlaneAnchor else { return }
         DispatchQueue.main.async {
-            self.sceneView.statusView?.cancelScheduledMessage(for: "plane")
+            self.sceneView.statusView?.cancelScheduledMessage(type: "plane")
             self.sceneView.statusView?.show(message: "Surface detected")
             if self.arObjectLoader.loadedObjects.isEmpty {
                 self.sceneView.statusView?.schedule(message: "TAP + TO PLACE AN OBJECT", in: 7.5, type: "content")
@@ -107,7 +107,7 @@ class ViewController: ARObjectViewController {
             case .notAvailable, .limited:
                 self.sceneView.statusView?.schedule(message: camera.trackingState.description, in: 3.0, type: "tracking")
             case .normal:
-                self.sceneView.statusView?.cancelScheduledMessage(for: "tracking")
+                self.sceneView.statusView?.cancelScheduledMessage(type: "tracking")
                 self.showVirtualContent()
             }
         }
@@ -129,7 +129,7 @@ class ViewController: ARObjectViewController {
 
     override func resetSession() {
         super.resetSession()
-        self.sceneView.statusView?.schedule(message: "Finf a surface to place an object", in: 7.5, type: "plane")
+        self.sceneView.statusView?.schedule(message: "Find a surface to place an object", in: 7.5, type: "plane")
     }
 
     override func restartExperience() {

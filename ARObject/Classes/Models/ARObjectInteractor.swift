@@ -102,13 +102,18 @@ private extension ARSCNView {
         return raycastQuery(from: point, allowing: .estimatedPlane, alignment: alignment)
     }
     
-    func getEstimatedPlanes(from point: CGPoint, for alignment: ARRaycastQuery.TargetAlignment = .any) -> [ARRaycastResult]? {
-        if let query = getRaycastQuery(from: point, for: alignment) {
-            return castRay(for: query)
+    func detectEstimatedPlane(from point: CGPoint) -> (ARRaycastQuery, ARRaycastResult)? {
+        if let query = getRaycastQuery(from: point, for: .horizontal),
+           let result = castRay(for: query).first {
+            return (query, result)
+        }
+        if let query = getRaycastQuery(from: point, for: .vertical),
+           let result = castRay(for: query).first {
+            return (query, result)
         }
         return nil
     }
-
+    
     // MARK: Position Testing
     /// Hit tests against the `sceneView` to find an object at the provided point.
     func arObject(at point: CGPoint) -> ARObject? {
@@ -492,8 +497,7 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
             }
             selectedObject = nil
         } else if let delegate = delegate as? ARObjectInteractorDelegate,
-                  let query = sceneView.getRaycastQuery(from: touchLocation),
-                  let plane = sceneView.castRay(for: query).first {
+                  let (_, plane) = sceneView.detectEstimatedPlane(from: touchLocation) {
                     delegate.arObjectInteractor(self,
                                                requestsObjectAt: touchLocation,
                                                for: plane.targetAlignment) { (object) -> Void in

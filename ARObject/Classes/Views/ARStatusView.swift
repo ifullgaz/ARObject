@@ -23,8 +23,23 @@ public extension ARCamera.TrackingState {
     }
 }
 
+@objc
+public protocol ARStatusDisplayer where Self: UIView {
+    func show(message: String)
+
+    func hide()
+
+    func schedule(message: String, in delay: TimeInterval, type: String)
+
+    func cancelScheduledMessage(type: String)
+
+    func cancelAllScheduledMessages()
+
+    func updateWorldMappingStatus(status: ARFrame.WorldMappingStatus)
+}
+
 @IBDesignable
-open class ARStatusView: UIControl {
+open class ARStatusView: UIControl, ARStatusDisplayer {
     
     public static var perpectiveCoefficient: CGFloat = 1 / 500
 
@@ -320,7 +335,7 @@ open class ARStatusView: UIControl {
     }
     
     public func schedule(message: String, in delay: TimeInterval, type: String) {
-        cancelScheduledMessage(for: type)
+        cancelScheduledMessage(type: type)
 
         let timer = Timer.scheduledTimer(
             withTimeInterval: delay,
@@ -333,14 +348,14 @@ open class ARStatusView: UIControl {
         scheduleTimers[type] = timer
     }
     
-    public func cancelScheduledMessage(for type: String) {
+    public func cancelScheduledMessage(type: String) {
         scheduleTimers[type]?.invalidate()
         scheduleTimers[type] = nil
     }
     
     public func cancelAllScheduledMessages() {
         for (type, _) in scheduleTimers {
-            cancelScheduledMessage(for: type)
+            cancelScheduledMessage(type: type)
         }
     }
     

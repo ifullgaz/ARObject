@@ -95,7 +95,7 @@ private extension ARObjectView {
 #endif
     }
 
-    func removeStatusView(statusView: ARStatusView?) {
+    func removeStatusView(statusView: ARStatusDisplayer?) {
         if let statusView = statusView {
             statusView.removeFromSuperview()
         }
@@ -293,7 +293,7 @@ open class ARObjectView: ARSCNView {
     }
     
     @IBOutlet
-    public var statusView: ARStatusView? = nil {
+    public var statusView: ARStatusDisplayer? = nil {
         didSet {
             guard statusView !== oldValue else { return }
             removeStatusView(statusView: oldValue)
