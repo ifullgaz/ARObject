@@ -48,6 +48,15 @@ open class ARObjectViewController: UIViewController, ARSessionDelegate, ARSCNVie
     open func focusNodeChangedDisplayState(_ node: FocusNode) {}
 
     // MARK: - Coaching Overlay View Delegate
+    open func coachingOverlayViewWillActivate(_ coachingOverlayView: ARCoachingOverlayView) {
+        sceneView.statusView?.isHidden = true
+    }
+    
+    /// - Tag: PresentUI
+    open func coachingOverlayViewDidDeactivate(_ coachingOverlayView: ARCoachingOverlayView) {
+        sceneView.statusView?.isHidden = false
+    }
+
     /// - Tag: StartOver
     open func coachingOverlayViewDidRequestSessionReset(_ coachingOverlayView: ARCoachingOverlayView) {
         restartExperience()
@@ -95,7 +104,9 @@ open class ARObjectViewController: UIViewController, ARSessionDelegate, ARSCNVie
     
     // MARK: - ARSCNViewDelegate
     open func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        self.updateFocusNode(hide: self.shouldHideFocusSquare())
+        DispatchQueue.main.async {
+            self.updateFocusNode(hide: self.shouldHideFocusSquare())
+        }
     }
     
     // MARK: - ARSessionDelegate
@@ -117,6 +128,22 @@ open class ARObjectViewController: UIViewController, ARSessionDelegate, ARSCNVie
         }
     }
     
+    open func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        self.sceneView.statusView?.updateWorldMappingStatus(status: frame.worldMappingStatus)
+    
+    }
+    
+    /*
+     Allow the session to attempt to resume after an interruption.
+     This process may not succeed, so the app must be prepared
+     to reset the session if the relocalizing status continues
+     for a long time -- see `escalateFeedback` in `StatusViewController`.
+     */
+    /// - Tag: Relocalization
+    open func sessionShouldAttemptRelocalization(_ session: ARSession) -> Bool {
+        return true
+    }
+
     // MARK: - Session configuration
     open func sessionConfiguration() -> ARWorldTrackingConfiguration {
         let configuration = ARWorldTrackingConfiguration()
@@ -145,8 +172,10 @@ open class ARObjectViewController: UIViewController, ARSessionDelegate, ARSCNVie
         guard isRestartAvailable else { return }
         isRestartAvailable = false
         resetSession()
+        self.sceneView.statusView?.cancelAllScheduledMessages()
         DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
             self.isRestartAvailable = true
+            self.sceneView.statusView?.isHidden = false
         }
     }
 

@@ -19,16 +19,10 @@ class ViewController: ARObjectViewController {
     
     @IBOutlet weak var spinner: UIActivityIndicatorView!
     
-    @IBOutlet weak var upperControlsView: UIView!
-
     private var lastObjectAvailabilityUpdateTimestamp: TimeInterval?
     
     /// Coordinates the loading and unloading of reference nodes for virtual objects.
     let arObjectLoader = ARObjectLoader()
-
-    var statusViewController: StatusViewController {
-        return children.lazy.compactMap({ $0 as? StatusViewController }).first!
-    }
 
     /// The view controller that displays the virtual object selection menu.
     var objectsViewController: ARObjectSelectionViewController?
@@ -39,7 +33,7 @@ class ViewController: ARObjectViewController {
         // Ensure adding objects is an available action and we are not loading another object (to avoid concurrent modifications of the scene).
         guard !addObjectButton.isHidden && !arObjectLoader.isLoading else { return }
         
-        statusViewController.cancelScheduledMessage(for: .contentPlacement)
+        self.sceneView.statusView?.cancelScheduledMessage(for: "content")
         performSegue(withIdentifier: SegueIdentifier.showObjects.rawValue, sender: addObjectButton)
     }
 
@@ -58,7 +52,7 @@ class ViewController: ARObjectViewController {
             if !sceneView.coachingOverlayView!.isActive {
                 addObjectButton.isHidden = false
             }
-            statusViewController.cancelScheduledMessage(for: .focusNode)
+            self.sceneView.statusView?.cancelScheduledMessage(for: "focus")
         }
     }
 
@@ -66,22 +60,11 @@ class ViewController: ARObjectViewController {
         super.updateFocusNode(hide: hide)
         if !hide {
             DispatchQueue.main.async {
-                self.statusViewController.scheduleMessage("TRY MOVING LEFT OR RIGHT", inSeconds: 5.0, messageType: .focusNode)
+                self.sceneView.statusView?.schedule(message: "Try moving left or right", in: 5.0, type: "focus")
             }
         }
     }
     
-    // MARK: - ARCoachingOverlayViewDelegate
-    /// - Tag: HideUI
-    func coachingOverlayViewWillActivate(_ coachingOverlayView: ARCoachingOverlayView) {
-        upperControlsView.isHidden = true
-    }
-    
-    /// - Tag: PresentUI
-    func coachingOverlayViewDidDeactivate(_ coachingOverlayView: ARCoachingOverlayView) {
-        upperControlsView.isHidden = false
-    }
-
     // MARK: - Object Interactor Delegate
     override func arObjectInteractor(_ interactor: ARObjectInteractor, requestsObjectAt point: CGPoint, for alignment: ARRaycastQuery.TargetAlignment, completionBlock block: @escaping (ARObject?) -> Void) {
         showARObjectSelectionViewController()
@@ -109,22 +92,22 @@ class ViewController: ARObjectViewController {
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         guard anchor is ARPlaneAnchor else { return }
         DispatchQueue.main.async {
-            self.statusViewController.cancelScheduledMessage(for: .planeEstimation)
-            self.statusViewController.showMessage("SURFACE DETECTED")
+            self.sceneView.statusView?.cancelScheduledMessage(for: "plane")
+            self.sceneView.statusView?.show(message: "Surface detected")
             if self.arObjectLoader.loadedObjects.isEmpty {
-                self.statusViewController.scheduleMessage("TAP + TO PLACE AN OBJECT", inSeconds: 7.5, messageType: .contentPlacement)
+                self.sceneView.statusView?.schedule(message: "TAP + TO PLACE AN OBJECT", in: 7.5, type: "content")
             }
         }
     }
     
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
         DispatchQueue.main.async {
-            self.statusViewController.showTrackingQualityInfo(for: camera.trackingState, autoHide: true)
+            self.sceneView.statusView?.show(message: camera.trackingState.description)
             switch camera.trackingState {
             case .notAvailable, .limited:
-                self.statusViewController.escalateFeedback(for: camera.trackingState, inSeconds: 3.0)
+                self.sceneView.statusView?.schedule(message: camera.trackingState.description, in: 3.0, type: "tracking")
             case .normal:
-                self.statusViewController.cancelScheduledMessage(for: .trackingStateEscalation)
+                self.sceneView.statusView?.cancelScheduledMessage(for: "tracking")
                 self.showVirtualContent()
             }
         }
@@ -135,17 +118,6 @@ class ViewController: ARObjectViewController {
         hideVirtualContent()
     }
     
-    /*
-     Allow the session to attempt to resume after an interruption.
-     This process may not succeed, so the app must be prepared
-     to reset the session if the relocalizing status continues
-     for a long time -- see `escalateFeedback` in `StatusViewController`.
-     */
-    /// - Tag: Relocalization
-    func sessionShouldAttemptRelocalization(_ session: ARSession) -> Bool {
-        return true
-    }
-
     func showVirtualContent() {
         arObjectLoader.loadedObjects.forEach { $0.isHidden = false }
     }
@@ -157,21 +129,16 @@ class ViewController: ARObjectViewController {
 
     override func resetSession() {
         super.resetSession()
-        self.statusViewController.scheduleMessage("FIND A SURFACE TO PLACE AN OBJECT", inSeconds: 7.5, messageType: .planeEstimation)
+        self.sceneView.statusView?.schedule(message: "Finf a surface to place an object", in: 7.5, type: "plane")
     }
 
     override func restartExperience() {
         guard isRestartAvailable, !arObjectLoader.isLoading else { return }
         super.restartExperience()
 
-        statusViewController.cancelAllScheduledMessages()
         arObjectLoader.removeAllARObjects()
         addObjectButton.setImage(#imageLiteral(resourceName: "add"), for: [])
         addObjectButton.setImage(#imageLiteral(resourceName: "addPressed"), for: [.highlighted])
-        // Disable restart for a while in order to give the session time to restart.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-            self.upperControlsView.isHidden = false
-        }
     }
     
     override func viewDidLoad() {
@@ -180,6 +147,8 @@ class ViewController: ARObjectViewController {
         let objectInteractor = ARObjectInteractor(sceneView: sceneView)
         objectInteractor.updateQueue = updateQueue
         objectInteractor.delegate = self
+        
+        sceneView.focusNodeType = FocusArc.self
     }
 }
 

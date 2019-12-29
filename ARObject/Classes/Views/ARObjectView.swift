@@ -27,7 +27,7 @@ private extension ARObjectView {
 #else
         if useFocusNode {
             if focusNode == nil {
-                let focusNode = type(of: self).focusNodeType.init()
+                let focusNode = self.focusNodeType.init()
                 self.focusNode = focusNode
                 manageFocusNode = true
             }
@@ -98,8 +98,6 @@ private extension ARObjectView {
     func removeStatusView(statusView: ARStatusView?) {
         if let statusView = statusView {
             statusView.removeFromSuperview()
-            if manageStatusView {
-            }
         }
     }
     
@@ -114,9 +112,15 @@ private extension ARObjectView {
                 manageStatusView = true
             }
             if let statusView = statusView {
-                if manageStatusView {
-                }
+                statusView.removeFromSuperview()
                 self.addSubview(statusView)
+                statusView.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    statusView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+                    statusView.widthAnchor.constraint(equalTo: self.widthAnchor),
+                    statusView.heightAnchor.constraint(equalToConstant: 64),
+                    statusView.topAnchor.constraint(equalTo: self.topAnchor, constant: 80)
+                ])
             }
         }
         else {
@@ -309,7 +313,9 @@ open class ARObjectView: ARSCNView {
             }
         }
     }
-    
+
+    public var focusNodeType: FocusNode.Type = FocusSquare.self
+
     // MARK: - Initialization
     convenience public init(in view: UIView) {
         self.init(frame: view.frame)

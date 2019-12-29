@@ -7,100 +7,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Status View Controller-->
-        <scene sceneID="kty-qO-YLK">
-            <objects>
-                <viewController id="vHg-r5-Jgq" customClass="StatusViewController" customModule="ARObject_Example" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="GaU-02-fC2"/>
-                        <viewControllerLayoutGuide type="bottom" id="gFb-N1-9PH"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="OBh-bs-Acd">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="85"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <visualEffectView hidden="YES" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="YiH-qY-MTN" userLabel="Message Panel">
-                                <rect key="frame" x="16" y="26.5" width="125" height="32"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="bB1-Jy-DLi">
-                                    <rect key="frame" x="0.0" y="0.0" width="125" height="32"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="g8Q-J0-YSr">
-                                            <rect key="frame" x="0.0" y="0.0" width="125" height="32"/>
-                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="JKq-gu-MJT">
-                                                <rect key="frame" x="0.0" y="0.0" width="125" height="32"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="250" text="Tracking status" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pHU-h4-hHQ" userLabel="Messages label">
-                                                        <rect key="frame" x="16" y="8" width="93" height="16"/>
-                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
-                                                        <nil key="textColor"/>
-                                                        <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <size key="shadowOffset" width="1" height="1"/>
-                                                    </label>
-                                                </subviews>
-                                                <constraints>
-                                                    <constraint firstItem="pHU-h4-hHQ" firstAttribute="trailing" secondItem="JKq-gu-MJT" secondAttribute="trailing" constant="-16" id="2oT-az-ByP"/>
-                                                    <constraint firstItem="pHU-h4-hHQ" firstAttribute="centerY" secondItem="JKq-gu-MJT" secondAttribute="centerY" id="4Qb-yR-AVT"/>
-                                                    <constraint firstItem="pHU-h4-hHQ" firstAttribute="leading" secondItem="JKq-gu-MJT" secondAttribute="leading" constant="16" id="Xnd-M5-rmI"/>
-                                                    <constraint firstItem="pHU-h4-hHQ" firstAttribute="top" secondItem="JKq-gu-MJT" secondAttribute="top" constant="8" id="wGC-rf-DhS"/>
-                                                </constraints>
-                                            </view>
-                                            <vibrancyEffect>
-                                                <blurEffect style="extraLight"/>
-                                            </vibrancyEffect>
-                                        </visualEffectView>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="g8Q-J0-YSr" firstAttribute="leading" secondItem="bB1-Jy-DLi" secondAttribute="leading" id="4T5-bc-tDp"/>
-                                        <constraint firstItem="g8Q-J0-YSr" firstAttribute="top" secondItem="bB1-Jy-DLi" secondAttribute="top" id="CkJ-Bg-vDT"/>
-                                        <constraint firstAttribute="trailing" secondItem="g8Q-J0-YSr" secondAttribute="trailing" id="qbD-eh-bV7"/>
-                                    </constraints>
-                                </view>
-                                <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="pHU-h4-hHQ" secondAttribute="bottom" constant="8" id="dMW-Ae-rF7"/>
-                                </constraints>
-                                <blurEffect style="light"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="3"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                            </visualEffectView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="bottom" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D1E-Mk-IhN" userLabel="Restart Experience Button Icon">
-                                <rect key="frame" x="370" y="0.0" width="44" height="59"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="44" id="mxR-kd-b4Z"/>
-                                    <constraint firstAttribute="height" constant="59" id="yDl-EP-tmu"/>
-                                </constraints>
-                                <inset key="contentEdgeInsets" minX="8" minY="0.0" maxX="0.0" maxY="12"/>
-                                <state key="normal" image="restart"/>
-                                <state key="selected" image="restartPressed"/>
-                                <state key="highlighted" image="restartPressed"/>
-                                <connections>
-                                    <action selector="restartExperience:" destination="vHg-r5-Jgq" eventType="touchUpInside" id="9de-7u-I02"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="D1E-Mk-IhN" secondAttribute="trailing" id="4o2-Zz-KPT"/>
-                            <constraint firstItem="D1E-Mk-IhN" firstAttribute="top" secondItem="OBh-bs-Acd" secondAttribute="top" id="5Fq-9p-Xo2"/>
-                            <constraint firstItem="YiH-qY-MTN" firstAttribute="leading" secondItem="OBh-bs-Acd" secondAttribute="leading" constant="16" id="Cgi-XQ-ARk"/>
-                            <constraint firstItem="YiH-qY-MTN" firstAttribute="centerY" secondItem="OBh-bs-Acd" secondAttribute="centerY" id="Eeu-Dq-aK7"/>
-                            <constraint firstItem="D1E-Mk-IhN" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="YiH-qY-MTN" secondAttribute="trailing" constant="8" id="Jfr-hv-JSa"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="messageLabel" destination="pHU-h4-hHQ" id="z5v-06-mUS"/>
-                        <outlet property="messagePanel" destination="YiH-qY-MTN" id="ljc-A1-hQS"/>
-                        <outlet property="restartExperienceButton" destination="D1E-Mk-IhN" id="vHG-VD-TtL"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="YRs-MH-rmr" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="55" y="-283"/>
-        </scene>
         <!--View Controller-->
         <scene sceneID="bqO-VC-gy6">
             <objects>
@@ -111,24 +17,10 @@
                         <subviews>
                             <sceneKitView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" wantsMultisampling="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q4u-iA-Cc5" customClass="ARObjectView" customModule="ARObject">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="useFocusNode" value="NO"/>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="useCoachingOverlayView" value="NO"/>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="useObjectInteractor" value="NO"/>
-                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="delegate" destination="KLx-yI-Lsn" id="awb-TL-Wal"/>
                                 </connections>
                             </sceneKitView>
-                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vea-kn-gVE">
-                                <rect key="frame" x="0.0" y="44" width="414" height="85"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="85" id="oja-eD-L1B"/>
-                                </constraints>
-                                <connections>
-                                    <segue destination="vHg-r5-Jgq" kind="embed" id="4ja-bc-vpt"/>
-                                </connections>
-                            </containerView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="El2-WM-X3N" userLabel="Add Object Button">
                                 <rect key="frame" x="183" y="799" width="48" height="48"/>
                                 <constraints>
@@ -151,14 +43,11 @@
                             <constraint firstItem="hr1-Yk-1fd" firstAttribute="bottom" secondItem="El2-WM-X3N" secondAttribute="bottom" constant="15" id="0Nn-p5-ygu"/>
                             <constraint firstItem="hr1-Yk-1fd" firstAttribute="trailing" secondItem="Q4u-iA-Cc5" secondAttribute="trailing" id="6Xf-v8-Sf1"/>
                             <constraint firstItem="rhQ-N1-jQa" firstAttribute="width" secondItem="El2-WM-X3N" secondAttribute="width" constant="-5" id="8oG-pW-A11"/>
-                            <constraint firstItem="Vea-kn-gVE" firstAttribute="top" secondItem="hr1-Yk-1fd" secondAttribute="top" id="P2S-dO-Yl1"/>
                             <constraint firstItem="rhQ-N1-jQa" firstAttribute="centerY" secondItem="El2-WM-X3N" secondAttribute="centerY" id="QGh-DE-qhL"/>
                             <constraint firstItem="rhQ-N1-jQa" firstAttribute="height" secondItem="El2-WM-X3N" secondAttribute="height" constant="-5" id="ZkR-uU-cCW"/>
                             <constraint firstItem="rhQ-N1-jQa" firstAttribute="centerX" secondItem="El2-WM-X3N" secondAttribute="centerX" id="bvs-OE-tZr"/>
-                            <constraint firstItem="Vea-kn-gVE" firstAttribute="leading" secondItem="hr1-Yk-1fd" secondAttribute="leading" id="crS-cs-tJ6"/>
                             <constraint firstItem="Q4u-iA-Cc5" firstAttribute="leading" secondItem="hr1-Yk-1fd" secondAttribute="leading" id="o5q-y0-k1Q"/>
                             <constraint firstAttribute="bottom" secondItem="Q4u-iA-Cc5" secondAttribute="bottom" id="uKJ-kX-IAH"/>
-                            <constraint firstItem="hr1-Yk-1fd" firstAttribute="trailing" secondItem="Vea-kn-gVE" secondAttribute="trailing" id="uuE-Cv-IML"/>
                             <constraint firstItem="Q4u-iA-Cc5" firstAttribute="top" secondItem="c2J-em-Ik0" secondAttribute="top" id="xuQ-Tz-Gza"/>
                             <constraint firstItem="El2-WM-X3N" firstAttribute="centerX" secondItem="hr1-Yk-1fd" secondAttribute="centerX" id="yJk-lM-dwU"/>
                         </constraints>
@@ -168,7 +57,6 @@
                         <outlet property="addObjectButton" destination="El2-WM-X3N" id="mKV-bx-K0E"/>
                         <outlet property="sceneView" destination="Q4u-iA-Cc5" id="pTf-Lm-1jH"/>
                         <outlet property="spinner" destination="rhQ-N1-jQa" id="rjA-Pp-L46"/>
-                        <outlet property="upperControlsView" destination="Vea-kn-gVE" id="Rby-DC-hqk"/>
                         <segue destination="ixm-Zb-2cb" kind="popoverPresentation" identifier="showObjects" popoverAnchorView="El2-WM-X3N" id="cbI-qW-GYh">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
@@ -248,7 +136,5 @@
     </scenes>
     <resources>
         <image name="add" width="48" height="48"/>
-        <image name="restart" width="20" height="20"/>
-        <image name="restartPressed" width="20" height="20"/>
     </resources>
 </document>

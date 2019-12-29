@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ARObject'
-  s.version          = '0.6.0'
+  s.version          = '0.7.0'
   s.summary          = 'A library to help develop AR apps.'
 
 # This description is used to generate tags and improve search results.
@@ -33,9 +33,10 @@ A library to help develop AR apps easily.
 
   s.source_files = 'ARObject/Classes/**/*'
   
-  # s.resource_bundles = {
-  #   'ARObject' => ['ARObject/Assets/*.png']
-  # }
+#   s.resource_bundles = {
+#     'ARObject' => ['ARObject/Assets/*']
+#   }
+   s.resources = 'ARObject/Assets/**/*'
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'

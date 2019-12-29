@@ -26,7 +26,7 @@ extension ViewController: ARObjectSelectionViewControllerDelegate {
                         self.hideObjectLoadingUI()
                         guard !self.sceneView.useFocusNode || self.sceneView.focusNode!.detectionState != .initializing,
                             self.sceneView.objectInteractor!.place(arObject: object) else {
-                             self.statusViewController.showMessage("CANNOT PLACE OBJECT\nTry moving left or right.")
+                             self.sceneView.statusView?.show(message: "Cannot place object\nTry moving left or right.")
                              if let controller = self.objectsViewController {
                                  self.arObjectSelectionViewController(controller, didDeselectObject: object)
                              }
