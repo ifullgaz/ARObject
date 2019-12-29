@@ -219,21 +219,8 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
     // MARK: - Private variables
     /**
      The object that has been most recently intereacted with.
-     The `selectedObject` can be moved at any time with the tap gesture.
      */
-    private var selectedObject: ARObject?
-    
-    /// The object that is tracked for use by the pan and rotation gestures.
-    private var trackedObject: ARObject? {
-        didSet {
-//            guard trackedObject != nil else { return }
-//            selectedObject = trackedObject
-        }
-    }
-    
-    private var session: ARSession {
-        return sceneView.session
-    }
+    private var trackedObject: ARObject?
     
     /// The tracked screen position used to update the `trackedObject`'s position.
     private var currentTrackingPosition: CGPoint?
@@ -278,8 +265,7 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
     @IBOutlet
     public weak var delegate: AnyObject?
     
-    @IBOutlet
-    public weak var updateQueue: DispatchQueue?
+    public var updateQueue: DispatchQueue = DispatchQueue.global(qos: .userInitiated)
 
     // MARK: - Private interface
     private func setTransform(of arObject: ARObject, with result: ARRaycastResult) {
@@ -289,32 +275,33 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
     // - MARK: - Object anchors
     /// - Tag: AddOrUpdateAnchor
     func addOrUpdateAnchor(for object: ARObject) {
+        guard let sceneView = self.sceneView else { return }
         // If the anchor is not nil, remove it from the session.
         if let anchor = object.anchor {
-            session.remove(anchor: anchor)
+            sceneView.session.remove(anchor: anchor)
         }
         
         // Create a new anchor with the object's current transform and add it to the session
         let newAnchor = ARAnchor(name: object.name ?? "", transform: object.simdWorldTransform)
         object.anchor = newAnchor
-        session.add(anchor: newAnchor)
+        sceneView.session.add(anchor: newAnchor)
     }
 
     // - Tag: ProcessRaycastResults
     private func setObjectPosition(_ results: [ARRaycastResult], with arObject: ARObject) {
+        guard let sceneView = self.sceneView else { return }
         guard let result = results.first else {
             fatalError("Unexpected case: the update handler is always supposed to return at least one result.")
         }
         self.setTransform(of: arObject, with: result)
         // If the virtual object is not yet in the scene, add it.
         if arObject.parent == nil {
-            self.sceneView.scene.rootNode.addChildNode(arObject)
+            sceneView.scene.rootNode.addChildNode(arObject)
             arObject.shouldUpdateAnchor = true
         }
         if arObject.shouldUpdateAnchor {
             arObject.shouldUpdateAnchor = false
-            let queue = updateQueue ?? DispatchQueue.main
-            queue.async {
+            updateQueue.async {
                 self.addOrUpdateAnchor(for: arObject)
             }
         }
@@ -322,7 +309,7 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
     
     private func createTrackedRaycast(of arObject: ARObject,
                                       from query: ARRaycastQuery) -> ARTrackedRaycast? {
-        return session.trackedRaycast(query) { (results) in
+        return self.sceneView.session.trackedRaycast(query) { (results) in
             self.setObjectPosition(results, with: arObject)
         }
     }
@@ -366,7 +353,7 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
         
         // Update the object by using a one-time position request.
         if let query = sceneView.raycastQuery(from: screenPos, allowing: .estimatedPlane, alignment: object.allowedAlignment),
-           let result = session.raycast(query).first {
+           let result = sceneView.session.raycast(query).first {
             if object.allowedAlignment == .any && self.trackedObject == object {
                 // If an object that's aligned to a surface is being dragged, then
                 // smoothen its orientation to avoid visible jumps, and apply only the translation directly.
@@ -393,8 +380,7 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
         } else {
             // If the tracked raycast did not succeed, simply update the anchor to the object's current position.
             object.shouldUpdateAnchor = false
-            let queue = updateQueue ?? DispatchQueue.main
-            queue.async {
+            updateQueue.async {
                 self.addOrUpdateAnchor(for: object)
             }
         }
@@ -485,9 +471,9 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
                 canSelect = delegate.arObjectInteractor(self, canSelectObject: tappedObject, at: touchLocation)
             }
             if canSelect {
-                selectedObject = tappedObject
+                trackedObject = tappedObject
             }
-        } else if let object = selectedObject {
+        } else if let object = trackedObject {
             // Otherwise, if we have a previously selected object,
             // move the selected object to its new position at the tap location.
             var canMove = true
@@ -500,7 +486,7 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
                     delegate.arObjectInteractor(self, didMoveObject: object, to: touchLocation)
                 }
             }
-            selectedObject = nil
+            trackedObject = nil
         } else if let delegate = delegate as? ARObjectInteractorDelegate,
                   let (_, plane) = sceneView.detectEstimatedPlane(from: touchLocation) {
                     delegate.arObjectInteractor(

@@ -16,7 +16,6 @@ private extension ARObjectView {
             if manageFocusNode {
                 focusNode.sceneView = nil
                 focusNode.delegate = nil
-                focusNode.updateQueue = nil
             }
         }
     }
@@ -133,7 +132,6 @@ private extension ARObjectView {
         if let objectInteractor = objectInteractor {
             if manageObjectInteractor {
                 objectInteractor.sceneView = nil
-                objectInteractor.updateQueue = nil
                 objectInteractor.delegate = nil
             }
         }
@@ -256,16 +254,6 @@ open class ARObjectView: ARSCNView {
     }
 
     @IBOutlet
-    public var updateQueue: DispatchQueue? = nil {
-        didSet {
-            guard updateQueue !== oldValue else { return }
-            if dependentObjectsUpdated {
-                updateDependentObjects()
-            }
-        }
-    }
-    
-    @IBOutlet
     public var focusNode: FocusNode? = nil {
         didSet {
             guard focusNode !== oldValue else { return }
@@ -316,6 +304,15 @@ open class ARObjectView: ARSCNView {
 
     public var focusNodeType: FocusNode.Type = FocusSquare.self
 
+    public var updateQueue: DispatchQueue = DispatchQueue.global(qos: .userInitiated) {
+        didSet {
+            guard updateQueue !== oldValue else { return }
+            if dependentObjectsUpdated {
+                updateDependentObjects()
+            }
+        }
+    }
+    
     // MARK: - Initialization
     convenience public init(in view: UIView) {
         self.init(frame: view.frame)
