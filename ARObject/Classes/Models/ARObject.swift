@@ -125,6 +125,10 @@ open class ARObject: SCNNode {
 
     open func setupGeometry() {}
 
+    deinit {
+        self.stopTrackedRaycast()
+    }
+    
     // MARK: - Initialization
     required public override init() {
         super.init()

@@ -193,7 +193,7 @@ private extension ARObjectView {
         self.updateCoachingOverlayViewIfNeeded()
         self.updateStatusViewIfNeeded()
         self.updateObjectInteractorIfNeeded()
-        self.dependentObjectsUpdated = true
+        self.dependentObjectsNeedUpdate = true
 #endif
         // Dispatching the creation of objects gives the opportunity to configure the
         // view before creating objects that may not be needed
@@ -202,7 +202,7 @@ private extension ARObjectView {
             self.updateCoachingOverlayViewIfNeeded()
             self.updateStatusViewIfNeeded()
             self.updateObjectInteractorIfNeeded()
-            self.dependentObjectsUpdated = true
+            self.dependentObjectsNeedUpdate = true
         }
     }
 }
@@ -238,12 +238,12 @@ open class ARObjectView: ARSCNView {
     private var manageCoachingOverlayView: Bool = false
     private var manageObjectInteractor: Bool = false
     private var manageStatusView: Bool = false
-    private var dependentObjectsUpdated: Bool = false
+    private var dependentObjectsNeedUpdate: Bool = false
 
     @IBInspectable
     open var useFocusNode: Bool = true {
         didSet {
-            guard useFocusNode != oldValue, dependentObjectsUpdated else { return }
+            guard useFocusNode != oldValue, dependentObjectsNeedUpdate else { return }
             updateFocusNodeIfNeeded()
         }
     }
@@ -252,7 +252,7 @@ open class ARObjectView: ARSCNView {
     @IBInspectable
     open var useCoachingOverlayView: Bool = true {
         didSet {
-            guard useCoachingOverlayView != oldValue, dependentObjectsUpdated else { return }
+            guard useCoachingOverlayView != oldValue, dependentObjectsNeedUpdate else { return }
             updateCoachingOverlayViewIfNeeded()
         }
     }
@@ -260,7 +260,7 @@ open class ARObjectView: ARSCNView {
     @IBInspectable
     open var useObjectInteractor: Bool = true {
         didSet {
-            guard useObjectInteractor != oldValue, dependentObjectsUpdated else { return }
+            guard useObjectInteractor != oldValue, dependentObjectsNeedUpdate else { return }
             updateObjectInteractorIfNeeded()
         }
     }
@@ -268,7 +268,7 @@ open class ARObjectView: ARSCNView {
     @IBInspectable
     open var useStatusView: Bool = true {
         didSet {
-            guard useStatusView != oldValue, dependentObjectsUpdated else { return }
+            guard useStatusView != oldValue, dependentObjectsNeedUpdate else { return }
             updateStatusViewIfNeeded()
         }
     }
@@ -316,7 +316,7 @@ open class ARObjectView: ARSCNView {
             if let sessionDelegate = delegate as? ARSessionDelegate {
                 self.session.delegate = sessionDelegate
             }
-            if dependentObjectsUpdated {
+            if dependentObjectsNeedUpdate {
                 updateDependentObjects()
             }
         }
@@ -327,7 +327,8 @@ open class ARObjectView: ARSCNView {
     public var updateQueue: DispatchQueue = DispatchQueue.global(qos: .userInitiated) {
         didSet {
             guard updateQueue !== oldValue else { return }
-            if dependentObjectsUpdated {
+            self.session.delegateQueue = updateQueue
+            if dependentObjectsNeedUpdate {
                 updateDependentObjects()
             }
         }

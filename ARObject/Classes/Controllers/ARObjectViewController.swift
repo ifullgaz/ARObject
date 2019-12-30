@@ -28,7 +28,8 @@ open class ARObjectViewController: UIViewController,
     
     // MARK: - Instances Variables
     public lazy var updateQueue: DispatchQueue = {
-        DispatchQueue(label: "com.arobject.\(type(of: self).updateQueueName).serialSceneKitQueue")
+        DispatchQueue(label: "com.arobject.\(type(of: self).updateQueueName).serialSceneKitQueue",
+                      qos: .userInitiated)
     }()
 
     /// Marks if the AR experience is available for restart.
@@ -182,7 +183,6 @@ open class ARObjectViewController: UIViewController,
     open func resetSession() {
         let configuration = sessionConfiguration()
         sceneView.debugOptions = debugOptions()
-        sceneView.session.delegateQueue = self.updateQueue
         sceneView.session.run(configuration, options: sessionRunOptions())
     }
 
