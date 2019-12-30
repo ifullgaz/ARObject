@@ -17,10 +17,13 @@ public extension ARObject {
         }
         set {
             guard referenceURL != newValue else { return }
-            unload()
+            self.unload()
+            referenceNode?.removeFromParentNode()
             referenceNode = nil
-            if let newValue = newValue {
-                referenceNode = SCNReferenceNode(url: newValue)
+            if let newValue = newValue,
+               let referenceNode = SCNReferenceNode(url: newValue) {
+                self.referenceNode = referenceNode
+                addChildNode(referenceNode)
                 name = newValue.lastPathComponent.replacingOccurrences(of: ".scn", with: "")
             }
         }
@@ -44,19 +47,20 @@ public extension ARObject {
     }
 
     func load() {
-        if let referenceNode = referenceNode {
-            referenceNode.load()
-            addChildNode(referenceNode)
-        }
+        referenceNode?.load()
     }
     
     func unload() {
-        if let referenceNode = referenceNode {
-            referenceNode.removeFromParentNode()
-            referenceNode.unload()
-        }
+        referenceNode?.unload()
     }
     
+    convenience init?(url referenceURL: URL) {
+        self.init()
+        self.referenceURL = referenceURL
+        if referenceNode == nil {
+            return nil
+        }
+    }
 }
 
 // MARK: - ARObject
@@ -125,11 +129,6 @@ open class ARObject: SCNNode {
     required public override init() {
         super.init()
         self.setupGeometry()
-    }
-    
-    required public init(url referenceURL: URL) {
-        super.init()
-        self.referenceURL = referenceURL
     }
     
     required public init?(coder aDecoder: NSCoder) {
