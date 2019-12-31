@@ -8,6 +8,7 @@ Methods on the main view controller for handling virtual object loading and move
 import UIKit
 import ARKit
 import ARObject
+import ARFocusSquare
 
 extension ViewController: ARObjectSelectionViewControllerDelegate {
     
@@ -24,8 +25,11 @@ extension ViewController: ARObjectSelectionViewControllerDelegate {
                 self.sceneView.prepare([scene], completionHandler: { _ in
                     DispatchQueue.main.async {
                         self.hideObjectLoadingUI()
-                        guard !self.sceneView.useFocusNode || self.sceneView.focusNode!.detectionState != .initializing,
-                            self.sceneView.objectInteractor!.place(arObject: object, at: self.sceneView.center) else {
+                        let displayState: FocusNode.DisplayState = self.sceneView.focusNode!.displayState
+                        guard !self.sceneView.useFocusNode || (
+                              displayState != FocusNode.DisplayState.initializing &&
+                              displayState != FocusNode.DisplayState.billboard),
+                              self.sceneView.objectInteractor!.place(arObject: object, at: self.sceneView.center) else {
                              self.sceneView.statusView?.present(message: "Cannot place object\nTry moving left or right.")
                              if let controller = self.objectsViewController {
                                  self.arObjectSelectionViewController(controller, didDeselectObject: object)

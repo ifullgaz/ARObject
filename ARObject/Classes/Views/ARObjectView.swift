@@ -36,7 +36,8 @@ private extension ARObjectView {
 #else
         if useFocusNode {
             if focusNode == nil {
-                let focusNode = self.focusNodeType.init()
+                let focusIndicatorNode = self.FocusIndicatorType.init()
+                let focusNode = FocusNode(content: focusIndicatorNode)
                 self.focusNode = focusNode
                 manageFocusNode = true
                 if let arObjectViewDelegate = delegate as? ARObjectViewDelegate {
@@ -51,7 +52,6 @@ private extension ARObjectView {
                         focusNode.delegate = focusNodeDelegate
                     }
                 }
-                self.scene.rootNode.addChildNode(focusNode)
             }
         }
         else {
@@ -218,20 +218,6 @@ open class ARObjectView: ARSCNView {
     var useStatusViewIndicator: StatusViewIndicator = StatusViewIndicator(frame: CGRect(x: 110, y: 50, width: 20, height: 20))
     #endif
 
-    // MARK: - Class variables
-    /// Returns the class used to create the focus node if in use
-    /// - returns: the class used to create the focus node
-    ///
-    /// This method returns the FocusSquare class object by default. Subclasses can override this method and return a different layer class as needed. For example, if you want to display a simple square, you might want to override this property and return the FocusPlane class, as shown here:
-    ///
-    ///    Returning a FocusPlane
-    ///````
-    ///    override class var focusNodeType: FocusNode.Type {
-    ///       return FocusPlane.self}
-    ///````
-    ///    This method is called only once early in the creation of the view in order to create the focus node.
-    open class var focusNodeType: FocusNode.Type { return FocusSquare.self }
-
     // MARK: - Instance variables
     /// Set to true to see the focus node
     private var manageFocusNode: Bool = false
@@ -322,7 +308,7 @@ open class ARObjectView: ARSCNView {
         }
     }
 
-    public var focusNodeType: FocusNode.Type = FocusSquare.self
+    public var FocusIndicatorType: FocusIndicatorNode.Type = FocusSquare.self
 
     public var updateQueue: DispatchQueue = DispatchQueue.global(qos: .userInitiated) {
         didSet {

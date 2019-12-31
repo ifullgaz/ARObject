@@ -52,7 +52,7 @@ open class ARObjectViewController: UIViewController,
     }
 
     // MARK: - Focus Node Delegate
-    open func focusNodeChangedDisplayState(_ node: FocusNode) {}
+    open func focusNodeChangedDisplayState(_ node: FocusNode, state: FocusNode.DisplayState) {}
 
     // MARK: - Coaching Overlay View Delegate
     open func coachingOverlayViewWillActivate(_ coachingOverlayView: ARCoachingOverlayView) {

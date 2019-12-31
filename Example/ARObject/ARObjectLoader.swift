@@ -25,7 +25,7 @@ class ARObjectLoader {
         return fileEnumerator.compactMap { element in
             let url = element as! URL
             guard url.pathExtension == "scn" && !url.path.contains("lighting") else { return nil }
-            let arObject = ARObject(url: url)
+            guard let arObject = ARObject(url: url) else { return nil }
             if arObject.name == "sticky note" {
                 arObject.allowedAlignment = .any
             } else if arObject.name == "painting" {

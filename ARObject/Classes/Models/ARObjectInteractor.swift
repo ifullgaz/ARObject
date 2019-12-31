@@ -86,22 +86,6 @@ private extension UIGestureRecognizer {
 // MARK: - ARSCNView helpers
 private extension ARSCNView {
 
-    /// Center of the view
-    var screenCenter: CGPoint {
-        let bounds = self.bounds
-        return CGPoint(x: bounds.midX, y: bounds.midY)
-    }
-
-    // - Tag: CastRayForFocusSquarePosition
-    func castRay(for query: ARRaycastQuery) -> [ARRaycastResult] {
-        return session.raycast(query)
-    }
-
-    // - Tag: GetRaycastQuery
-    func getRaycastQuery(from point: CGPoint, for alignment: ARRaycastQuery.TargetAlignment = .any) -> ARRaycastQuery? {
-        return raycastQuery(from: point, allowing: .estimatedPlane, alignment: alignment)
-    }
-    
     func detectEstimatedPlane(
         from point: CGPoint,
         for alignment: ARRaycastQuery.TargetAlignment = .any) -> (ARRaycastQuery, ARRaycastResult)? {
@@ -274,7 +258,7 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
     
     // - MARK: - Object anchors
     /// - Tag: AddOrUpdateAnchor
-    func addOrUpdateAnchor(for object: ARObject) {
+    private func addOrUpdateAnchor(for object: ARObject) {
         guard let sceneView = self.sceneView else { return }
         // If the anchor is not nil, remove it from the session.
         if let anchor = object.anchor {
@@ -528,7 +512,6 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
             from: query)
 
         arObject.raycast = trackedRaycast
-        arObject.isHidden = false
         return true
     }
 }

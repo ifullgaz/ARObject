@@ -44,15 +44,16 @@ class ViewController: ARObjectViewController {
         return super.shouldHideFocusSquare() || isAnyObjectInView
     }
 
-    override func focusNodeChangedDisplayState(_ node: FocusNode) {
-        if node.detectionState == .initializing {
-            addObjectButton.isHidden = true
-            objectsViewController?.dismiss(animated: true, completion: nil)
-        } else {
-            if !sceneView.coachingOverlayView!.isActive {
-                addObjectButton.isHidden = false
-            }
-            self.sceneView.statusView?.cancelScheduledMessage(type: "focus")
+    override func focusNodeChangedDisplayState(_ node: FocusNode, state: FocusNode.DisplayState) {
+        switch state {
+            case .initializing, .billboard:
+                addObjectButton.isHidden = true
+                objectsViewController?.dismiss(animated: true, completion: nil)
+            default:
+                if !sceneView.coachingOverlayView!.isActive {
+                    addObjectButton.isHidden = false
+                }
+                self.sceneView.statusView?.cancelScheduledMessage(type: "focus")
         }
     }
 
@@ -165,7 +166,7 @@ class ViewController: ARObjectViewController {
 //        objectInteractor.updateQueue = updateQueue
 //        objectInteractor.delegate = self
         
-        sceneView.focusNodeType = FocusArc.self
+        sceneView.FocusIndicatorType = FocusArc.self
     }
 }
 
