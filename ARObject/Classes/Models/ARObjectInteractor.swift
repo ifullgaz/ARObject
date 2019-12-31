@@ -252,8 +252,8 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
     public var updateQueue: DispatchQueue = DispatchQueue.global(qos: .userInitiated)
 
     // MARK: - Private interface
-    private func setTransform(of arObject: ARObject, with result: ARRaycastResult) {
-        arObject.simdWorldTransform = result.worldTransform
+    private func setTransform(of object: ARObject, with result: ARRaycastResult) {
+        object.simdWorldTransform = result.worldTransform
     }
     
     // - MARK: - Object anchors
@@ -272,29 +272,25 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
     }
 
     // - Tag: ProcessRaycastResults
-    private func setObjectPosition(_ results: [ARRaycastResult], with arObject: ARObject) {
+    private func setObjectPosition(_ results: [ARRaycastResult], with object: ARObject) {
         guard let sceneView = self.sceneView else { return }
         guard let result = results.first else {
             fatalError("Unexpected case: the update handler is always supposed to return at least one result.")
         }
-        self.setTransform(of: arObject, with: result)
+        self.setTransform(of: object, with: result)
         // If the virtual object is not yet in the scene, add it.
-        if arObject.parent == nil {
-            sceneView.scene.rootNode.addChildNode(arObject)
-            arObject.shouldUpdateAnchor = true
+        if object.parent == nil {
+            sceneView.scene.rootNode.addChildNode(object)
         }
-        if arObject.shouldUpdateAnchor {
-            arObject.shouldUpdateAnchor = false
-            updateQueue.async {
-                self.addOrUpdateAnchor(for: arObject)
-            }
+        updateQueue.async {
+            self.addOrUpdateAnchor(for: object)
         }
     }
     
-    private func createTrackedRaycast(of arObject: ARObject,
+    private func createTrackedRaycast(of object: ARObject,
                                       from query: ARRaycastQuery) -> ARTrackedRaycast? {
         return self.sceneView.session.trackedRaycast(query) { (results) in
-            self.setObjectPosition(results, with: arObject)
+            self.setObjectPosition(results, with: object)
         }
     }
     
@@ -353,17 +349,14 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
     
     private func setDown(_ object: ARObject, basedOn screenPos: CGPoint) {
         object.stopTrackedRaycast()
-        
-        // Prepare to update the object's anchor to the current location.
-        object.shouldUpdateAnchor = true
-        
+                
         // Attempt to create a new tracked raycast from the current location.
         if let query = sceneView.raycastQuery(from: screenPos, allowing: .estimatedPlane, alignment: object.allowedAlignment),
            let raycast = createTrackedRaycast(of: object, from: query) {
+            // Prepare to update the object's anchor to the current location.
             object.raycast = raycast
         } else {
             // If the tracked raycast did not succeed, simply update the anchor to the object's current position.
-            object.shouldUpdateAnchor = false
             updateQueue.async {
                 self.addOrUpdateAnchor(for: object)
             }

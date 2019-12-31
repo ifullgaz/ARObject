@@ -108,10 +108,6 @@ open class ARObject: SCNNode {
     /// The associated tracked raycast used to place this object.
     public var raycast: ARTrackedRaycast?
     
-    /// Flag that indicates the associated anchor should be updated
-    /// at the end of a pan gesture or when the object is repositioned.
-    public var shouldUpdateAnchor = false
-
     /// Stops tracking the object's position and orientation.
     /// - Tag: StopTrackedRaycasts
     public func stopTrackedRaycast() {
