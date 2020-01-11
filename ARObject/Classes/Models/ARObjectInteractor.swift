@@ -84,7 +84,7 @@ private extension UIGestureRecognizer {
 }
 
 // MARK: - ARSCNView helpers
-private extension ARSCNView {
+public extension ARSCNView {
 
     func detectEstimatedPlane(
         from point: CGPoint,
@@ -112,6 +112,18 @@ private extension ARSCNView {
         return hitTestResults.lazy.compactMap { result in
             return ARObject.arObjectFrom(node: result.node)
         }.first
+    }
+
+    func addOrUpdateAnchor(for object: ARObject) {
+        // If the anchor is not nil, remove it from the session.
+        if let anchor = object.anchor {
+            self.session.remove(anchor: anchor)
+        }
+        
+        // Create a new anchor with the object's current transform and add it to the session
+        let newAnchor = ARAnchor(name: object.name ?? "", transform: object.simdWorldTransform)
+        object.anchor = newAnchor
+        self.session.add(anchor: newAnchor)
     }
 }
 
@@ -249,8 +261,10 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
     @IBOutlet
     public weak var delegate: AnyObject?
     
-    public var updateQueue: DispatchQueue = DispatchQueue.global(qos: .userInitiated)
+    lazy public var updateQueue: DispatchQueue = DispatchQueue.global(qos: .userInitiated)
 
+    public var raycastQueryTarget: ARRaycastQuery.Target = .estimatedPlane
+    
     // MARK: - Private interface
     private func setTransform(of object: ARObject, with result: ARRaycastResult) {
         object.simdWorldTransform = result.worldTransform
@@ -261,14 +275,7 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
     private func addOrUpdateAnchor(for object: ARObject) {
         guard let sceneView = self.sceneView else { return }
         // If the anchor is not nil, remove it from the session.
-        if let anchor = object.anchor {
-            sceneView.session.remove(anchor: anchor)
-        }
-        
-        // Create a new anchor with the object's current transform and add it to the session
-        let newAnchor = ARAnchor(name: object.name ?? "", transform: object.simdWorldTransform)
-        object.anchor = newAnchor
-        sceneView.session.add(anchor: newAnchor)
+        sceneView.addOrUpdateAnchor(for: object)
     }
 
     // - Tag: ProcessRaycastResults
@@ -332,7 +339,7 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
         object.stopTrackedRaycast()
         
         // Update the object by using a one-time position request.
-        if let query = sceneView.raycastQuery(from: screenPos, allowing: .estimatedPlane, alignment: object.allowedAlignment),
+        if let query = sceneView.raycastQuery(from: screenPos, allowing: raycastQueryTarget, alignment: object.allowedAlignment),
            let result = sceneView.session.raycast(query).first {
             if object.allowedAlignment == .any && self.trackedObject == object {
                 // If an object that's aligned to a surface is being dragged, then
@@ -351,7 +358,7 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
         object.stopTrackedRaycast()
                 
         // Attempt to create a new tracked raycast from the current location.
-        if let query = sceneView.raycastQuery(from: screenPos, allowing: .estimatedPlane, alignment: object.allowedAlignment),
+        if let query = sceneView.raycastQuery(from: screenPos, allowing: raycastQueryTarget, alignment: object.allowedAlignment),
            let raycast = createTrackedRaycast(of: object, from: query) {
             // Prepare to update the object's anchor to the current location.
             object.raycast = raycast

@@ -204,7 +204,7 @@ open class ARStatusView: UIView, ARStatusDisplayer {
             view.heightAnchor.constraint(equalTo: containerView.heightAnchor)
         ])
 
-        let blurEffect = UIBlurEffect(style: .regular)
+        let blurEffect = UIBlurEffect(style: .dark)
         let blurView = UIVisualEffectView()
         blurView.effect = blurEffect
         view.addSubview(blurView)
@@ -225,7 +225,7 @@ open class ARStatusView: UIView, ARStatusDisplayer {
         ])
         
         let vibrancyView = UIVisualEffectView()
-        vibrancyView.effect = UIVibrancyEffect(blurEffect: blurEffect, style: .fill)
+        vibrancyView.effect = UIVibrancyEffect(blurEffect: blurEffect, style: .label)
         blurView.contentView.addSubview(vibrancyView)
 
         vibrancyView.translatesAutoresizingMaskIntoConstraints = false
