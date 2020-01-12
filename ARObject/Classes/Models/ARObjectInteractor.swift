@@ -496,12 +496,16 @@ open class ARObjectInteractor: NSObject, UIGestureRecognizerDelegate {
     }
 
     // MARK: - Public interface
-    public func canPlace(arObject: ARObject, at point: CGPoint) -> Bool {
-        if let query = sceneView.getRaycastQuery(from: point, for: arObject.allowedAlignment),
+    public func canPlaceAnObject(for targetAlignment: ARRaycastQuery.TargetAlignment, at point: CGPoint) -> Bool {
+        if let query = sceneView.getRaycastQuery(from: point, for: targetAlignment),
            let _ = sceneView.castRay(for: query).first {
             return true
         }
         return false
+    }
+    
+    public func canPlace(arObject: ARObject, at point: CGPoint) -> Bool {
+        return canPlaceAnObject(for: arObject.allowedAlignment, at: point)
     }
     
     public func place(arObject: ARObject, at point: CGPoint) -> Bool {
